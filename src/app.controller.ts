@@ -13,8 +13,9 @@ export class AppController {
     uptime: number;
     timestamp: string;
   } {
-    const databaseStatus = this.dataSource.isInitialized ? 'connected' : 'disconnected';
-
+    const databaseStatus = this.dataSource.isInitialized
+      ? 'connected'
+      : 'disconnected';
     return {
       status: 'ok',
       database: databaseStatus,
