@@ -16,9 +16,11 @@ import {
   PayrollBreakdown,
   CalculationContext,
   SalaryComponents,
+  NetSalary,
+  TotalEmployerCost,
 } from '../dto/payroll-breakdown.dto';
 import { ErrorCode } from '../../../common/constants/error-codes.constant';
-import { BadRequestException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 @Injectable()
 export class CalculationOrchestratorService {
@@ -70,7 +72,7 @@ export class CalculationOrchestratorService {
 
     // 4. Validate rules exist
     if (components.length === 0) {
-      throw new BadRequestException(ErrorCode.NO_ACTIVE_RULES);
+      throw new UnprocessableEntityException(ErrorCode.NO_ACTIVE_RULES);
     }
 
     // 5. Build calculation context
@@ -162,17 +164,30 @@ export class CalculationOrchestratorService {
     annualEmployeeDeductions['total'] = statutoryBreakdown.employeeTotal;
     monthlyEmployeeDeductions['total'] = Math.round((statutoryBreakdown.employeeTotal / 12) * 100) / 100;
 
-    // 13. Assemble breakdown
+    // 14. Assemble breakdown
+    const netSalary: NetSalary = {
+      annual: annualNetSalary,
+      monthly: monthlyNetSalary,
+    };
+    const totalEmployerCost: TotalEmployerCost = {
+      annual: annualEmployerCost,
+      monthly: monthlyEmployerCost,
+    };
+
     let breakdown: PayrollBreakdown = {
       country: {
         code: country.code,
         name: country.name,
         currencyCode: country.currencyCode,
         currencySymbol: country.currencySymbol,
+        fiscalYearStartMonth: country.fiscalYearStartMonth,
       },
       input: {
         annualCtc: dto.annualCtc,
-        taxRegimeCode: dto.taxRegimeCode,
+        taxRegime: {
+          code: regime.code,
+          name: regime.name,
+        },
         isMetro: dto.isMetro ?? false,
         employeeAge: dto.employeeAge ?? 30,
         effectiveDate: effectiveDateStr,
@@ -191,18 +206,11 @@ export class CalculationOrchestratorService {
         monthly: monthlyEmployeeDeductions,
       },
       taxCalculation: taxDetail,
-      netSalary: {
-        annual: { total: annualNetSalary },
-        monthly: { total: monthlyNetSalary },
-      },
-      totalEmployerCost: {
-        annual: { total: annualEmployerCost },
-        monthly: { total: monthlyEmployerCost },
-      },
+      netSalary,
+      totalEmployerCost,
       currency: {
         primary: country.currencyCode,
-        output: null,
-        exchangeRate: null,
+        converted: null,
       },
     };
 

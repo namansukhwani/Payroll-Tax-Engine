@@ -25,5 +25,8 @@
     "noUnusedParameters": true,
     "strictBindCallApply": true,
     "noFallthroughCasesInSwitch": true
+  },
+  "ts-node": {
+    "transpileOnly": true
   }
 }

@@ -8,11 +8,17 @@ export interface CountryInfo {
   name: string;
   currencyCode: string;
   currencySymbol: string;
+  fiscalYearStartMonth: number;
+}
+
+export interface TaxRegimeInfo {
+  code: string;
+  name: string;
 }
 
 export interface CalculationInput {
   annualCtc: number;
-  taxRegimeCode: string;
+  taxRegime: TaxRegimeInfo;
   isMetro: boolean;
   employeeAge: number;
   effectiveDate: string;
@@ -31,22 +37,6 @@ export interface SalaryComponents {
   specialAllowance: number;
   otherEarnings: SalaryComponentAmount[];
   grossSalary: number;
-}
-
-export interface ContributionComponents {
-  [code: string]: {
-    name: string;
-    amount: number;
-  };
-  total: { name: string; amount: number };
-}
-
-export interface DeductionComponents {
-  [code: string]: {
-    name: string;
-    amount: number;
-  };
-  total: { name: string; amount: number };
 }
 
 export interface SlabBreakdown {
@@ -69,12 +59,32 @@ export interface TaxCalculationDetail {
   cess: number;
   cessRate: number;
   totalTax: number;
+  /** Monthly TDS = totalTax / 12, rounded */
+  monthlyTds: number;
+}
+
+export interface NetSalary {
+  annual: number;
+  monthly: number;
+}
+
+export interface TotalEmployerCost {
+  annual: number;
+  monthly: number;
+}
+
+export interface ConvertedCurrency {
+  currencyCode: string;
+  exchangeRate: number;
+  netSalaryAnnual: number;
+  netSalaryMonthly: number;
+  totalEmployerCostAnnual: number;
+  totalEmployerCostMonthly: number;
 }
 
 export interface CurrencyInfo {
   primary: string;
-  output: string | null;
-  exchangeRate: number | null;
+  converted: ConvertedCurrency | null;
 }
 
 export interface PayrollBreakdown {
@@ -84,8 +94,8 @@ export interface PayrollBreakdown {
   employerContributions: AnnualMonthly<Record<string, number> & { total: number }>;
   employeeDeductions: AnnualMonthly<Record<string, number> & { total: number }>;
   taxCalculation: TaxCalculationDetail;
-  netSalary: AnnualMonthly<{ total: number }>;
-  totalEmployerCost: AnnualMonthly<{ total: number }>;
+  netSalary: NetSalary;
+  totalEmployerCost: TotalEmployerCost;
   currency: CurrencyInfo;
 }
 

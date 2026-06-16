@@ -71,9 +71,9 @@ export class CurrencyConverterService {
     tc.surcharge = round(tc.surcharge);
     tc.cess = round(tc.cess);
     tc.totalTax = round(tc.totalTax);
+    tc.monthlyTds = round(tc.monthlyTds);
 
     // Convert slab breakdown monetary amounts (taxableAmount, taxAmount)
-    // minAmount, maxAmount, and ratePercentage are structural — leave as-is
     tc.slabBreakdown = tc.slabBreakdown.map(
       (slab: SlabBreakdown): SlabBreakdown => ({
         ...slab,
@@ -82,31 +82,30 @@ export class CurrencyConverterService {
       }),
     );
 
-    // Convert applied deductions monetary amounts (claimed, applied)
-    // code and name are strings — leave as-is
+    // Convert applied deductions monetary amounts
     tc.appliedDeductions = tc.appliedDeductions.map((d) => ({
       ...d,
       claimed: round(d.claimed),
       applied: round(d.applied),
     }));
 
-    // Convert netSalary (annual + monthly)
-    converted.netSalary.annual.total = round(converted.netSalary.annual.total);
-    converted.netSalary.monthly.total = round(
-      converted.netSalary.monthly.total,
-    );
+    // Convert netSalary (flat scalar)
+    converted.netSalary.annual = round(converted.netSalary.annual);
+    converted.netSalary.monthly = round(converted.netSalary.monthly);
 
-    // Convert totalEmployerCost (annual + monthly)
-    converted.totalEmployerCost.annual.total = round(
-      converted.totalEmployerCost.annual.total,
-    );
-    converted.totalEmployerCost.monthly.total = round(
-      converted.totalEmployerCost.monthly.total,
-    );
+    // Convert totalEmployerCost (flat scalar)
+    converted.totalEmployerCost.annual = round(converted.totalEmployerCost.annual);
+    converted.totalEmployerCost.monthly = round(converted.totalEmployerCost.monthly);
 
-    // Update currency metadata
-    converted.currency.output = toCurrency;
-    converted.currency.exchangeRate = rate;
+    // Update currency metadata — use new converted block shape
+    converted.currency.converted = {
+      currencyCode: toCurrency,
+      exchangeRate: rate,
+      netSalaryAnnual: converted.netSalary.annual,
+      netSalaryMonthly: converted.netSalary.monthly,
+      totalEmployerCostAnnual: converted.totalEmployerCost.annual,
+      totalEmployerCostMonthly: converted.totalEmployerCost.monthly,
+    };
 
     return converted;
   }

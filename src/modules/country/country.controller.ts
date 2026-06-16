@@ -51,8 +51,9 @@ export class CountryController {
   }
 
   @Delete(':code')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async softDelete(@Param('code') code: string): Promise<void> {
-    return this.countryService.softDelete(code);
+  @HttpCode(HttpStatus.OK)
+  async softDelete(@Param('code') code: string): Promise<{ message: string }> {
+    await this.countryService.softDelete(code);
+    return { message: 'Country deactivated successfully' };
   }
 }

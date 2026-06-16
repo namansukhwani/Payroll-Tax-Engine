@@ -97,7 +97,7 @@ export class TaxCalculatorService {
 
     const applicableSurcharge = surcharges.find(
       (s) =>
-        netTaxableIncome > Number(s.minIncome) &&
+        netTaxableIncome >= Number(s.minIncome) &&
         (s.maxIncome === null || netTaxableIncome <= Number(s.maxIncome)),
     );
 
@@ -137,6 +137,7 @@ export class TaxCalculatorService {
       cess,
       cessRate,
       totalTax,
+      monthlyTds: Math.round((totalTax / 12) * 100) / 100,
     };
   }
 }
