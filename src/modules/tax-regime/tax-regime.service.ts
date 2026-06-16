@@ -55,7 +55,7 @@ export class TaxRegimeService {
 
     return this.repo.findOneOrFail({
       where: { id: saved.id },
-      relations: ['country'],
+      relations: { country: true },
     });
   }
 
@@ -114,7 +114,7 @@ export class TaxRegimeService {
   async findById(id: string): Promise<TaxRegime> {
     const regime = await this.repo.findOne({
       where: { id },
-      relations: ['country'],
+      relations: { country: true },
     });
 
     if (!regime) {

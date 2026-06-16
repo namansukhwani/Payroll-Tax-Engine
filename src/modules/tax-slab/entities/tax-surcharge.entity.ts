@@ -1,0 +1,38 @@
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
+import { BaseEntity } from '../../../common/interfaces/base-entity.interface';
+import { TaxRegime } from '../../tax-regime/entities/tax-regime.entity';
+
+@Entity('tax_surcharges')
+@Index(['regimeId', 'effectiveFrom', 'isActive'])
+export class TaxSurcharge extends BaseEntity {
+  @Column({ name: 'regime_id', type: 'uuid', nullable: false })
+  regimeId!: string;
+
+  @Column({ name: 'min_income', type: 'decimal', precision: 15, scale: 2, nullable: false })
+  minIncome!: number;
+
+  @Column({ name: 'max_income', type: 'decimal', precision: 15, scale: 2, nullable: true })
+  maxIncome!: number | null;
+
+  @Column({ name: 'rate_percentage', type: 'decimal', precision: 5, scale: 2, nullable: false })
+  ratePercentage!: number;
+
+  @Column({ name: 'effective_from', type: 'date', nullable: false })
+  effectiveFrom!: Date;
+
+  @Column({ name: 'effective_to', type: 'date', nullable: true })
+  effectiveTo!: Date | null;
+
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive!: boolean;
+
+  @ManyToOne(() => TaxRegime, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'regime_id' })
+  regime!: TaxRegime;
+}
