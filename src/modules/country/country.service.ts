@@ -48,7 +48,7 @@ export class CountryService {
     const qb = this.repo.createQueryBuilder('country');
 
     if (isActive !== undefined) {
-      qb.where('country.is_active = :isActive', { isActive });
+      qb.where('country.isActive = :isActive', { isActive });
     }
 
     qb.orderBy('country.name', 'ASC')

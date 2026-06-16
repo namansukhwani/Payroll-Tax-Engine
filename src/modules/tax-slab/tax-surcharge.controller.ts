@@ -51,8 +51,9 @@ export class TaxSurchargeController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async softDelete(@Param('id') id: string): Promise<void> {
-    return this.taxSurchargeService.softDelete(id);
+  @HttpCode(HttpStatus.OK)
+  async softDelete(@Param('id') id: string): Promise<{ message: string }> {
+    await this.taxSurchargeService.softDelete(id);
+    return { message: 'Tax surcharge deactivated successfully' };
   }
 }

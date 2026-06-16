@@ -10,9 +10,8 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaginationQueryDto } from '../../common/dto/pagination.dto';
-import { ContributionSide } from '../../common/enums/contribution-side.enum';
 import { CreateStatutoryContributionDto } from './dto/create-statutory-contribution.dto';
+import { ListContributionsQueryDto } from './dto/list-contributions-query.dto';
 import { UpdateStatutoryContributionDto } from './dto/update-statutory-contribution.dto';
 import { StatutoryContributionService } from './statutory-contribution.service';
 
@@ -35,13 +34,12 @@ export class StatutoryContributionController {
   @Get()
   async findAll(
     @Param('countryCode') countryCode: string,
-    @Query() pagination: PaginationQueryDto,
-    @Query('contribution_side') contributionSide?: ContributionSide,
+    @Query() query: ListContributionsQueryDto,
   ) {
     return this.statutoryContributionService.findAll(
       countryCode,
-      pagination,
-      contributionSide,
+      query,
+      query.contribution_side,
     );
   }
 
@@ -59,8 +57,9 @@ export class StatutoryContributionController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async softDelete(@Param('id') id: string): Promise<void> {
-    return this.statutoryContributionService.softDelete(id);
+  @HttpCode(HttpStatus.OK)
+  async softDelete(@Param('id') id: string): Promise<{ message: string }> {
+    await this.statutoryContributionService.softDelete(id);
+    return { message: 'Statutory contribution deactivated successfully' };
   }
 }

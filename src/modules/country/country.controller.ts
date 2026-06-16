@@ -10,9 +10,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { PaginatedResponse, PaginationQueryDto } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/dto/pagination.dto';
 import { CountryService } from './country.service';
 import { CreateCountryDto } from './dto/create-country.dto';
+import { ListCountriesQueryDto } from './dto/list-countries-query.dto';
 import { UpdateCountryDto } from './dto/update-country.dto';
 import { Country } from './entities/country.entity';
 
@@ -28,13 +29,9 @@ export class CountryController {
 
   @Get()
   async findAll(
-    @Query() pagination: PaginationQueryDto,
-    @Query('is_active') isActive?: string,
+    @Query() query: ListCountriesQueryDto,
   ): Promise<PaginatedResponse<Country>> {
-    const isActiveParsed =
-      isActive === 'true' ? true : isActive === 'false' ? false : undefined;
-
-    return this.countryService.findAll(pagination, isActiveParsed);
+    return this.countryService.findAll(query, query.is_active);
   }
 
   @Get(':code')

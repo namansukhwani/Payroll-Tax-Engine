@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 
 export class CreateTaxCessDto {
+  @IsOptional()
   @IsUUID()
   regimeId!: string;
 

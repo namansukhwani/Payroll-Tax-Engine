@@ -9,6 +9,7 @@ import {
 } from 'class-validator';
 
 export class CreateTaxSlabDto {
+  @IsOptional()
   @IsUUID()
   regimeId!: string;
 

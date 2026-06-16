@@ -51,8 +51,9 @@ export class TaxSlabController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async softDelete(@Param('id') id: string): Promise<void> {
-    return this.taxSlabService.softDelete(id);
+  @HttpCode(HttpStatus.OK)
+  async softDelete(@Param('id') id: string): Promise<{ message: string }> {
+    await this.taxSlabService.softDelete(id);
+    return { message: 'Tax slab deactivated successfully' };
   }
 }

@@ -18,6 +18,7 @@ import { CalculationType } from '../../../common/enums/calculation-type.enum';
 import { CreateComponentConditionDto } from './create-component-condition.dto';
 
 export class CreateSalaryComponentDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   countryCode!: string;

@@ -12,6 +12,7 @@ import {
 } from 'class-validator';
 
 export class CreateDeductionSectionDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   countryCode!: string;

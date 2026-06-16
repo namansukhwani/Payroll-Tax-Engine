@@ -15,6 +15,7 @@ import { CalculationType } from '../../../common/enums/calculation-type.enum';
 import { ContributionSide } from '../../../common/enums/contribution-side.enum';
 
 export class CreateStatutoryContributionDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   countryCode!: string;

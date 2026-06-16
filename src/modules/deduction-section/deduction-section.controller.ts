@@ -10,12 +10,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import {
-  PaginatedResponse,
-  PaginationQueryDto,
-} from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/dto/pagination.dto';
 import { DeductionSectionService } from './deduction-section.service';
 import { CreateDeductionSectionDto } from './dto/create-deduction-section.dto';
+import { ListDeductionSectionsQueryDto } from './dto/list-deduction-sections-query.dto';
 import { UpdateDeductionSectionDto } from './dto/update-deduction-section.dto';
 import { DeductionSection } from './entities/deduction-section.entity';
 
@@ -36,9 +34,9 @@ export class DeductionSectionController {
   @Get()
   async findAll(
     @Param('countryCode') countryCode: string,
-    @Query() pagination: PaginationQueryDto,
+    @Query() query: ListDeductionSectionsQueryDto,
   ): Promise<PaginatedResponse<DeductionSection>> {
-    return this.deductionSectionService.findAll(countryCode, pagination);
+    return this.deductionSectionService.findAll(countryCode, query, query.regime_id);
   }
 
   @Get(':id')
@@ -55,8 +53,9 @@ export class DeductionSectionController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async softDelete(@Param('id') id: string): Promise<void> {
-    return this.deductionSectionService.softDelete(id);
+  @HttpCode(HttpStatus.OK)
+  async softDelete(@Param('id') id: string): Promise<{ message: string }> {
+    await this.deductionSectionService.softDelete(id);
+    return { message: 'Deduction section deactivated successfully' };
   }
 }

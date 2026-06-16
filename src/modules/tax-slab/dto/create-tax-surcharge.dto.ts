@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreateTaxSurchargeDto {
+  @IsOptional()
   @IsUUID()
   regimeId!: string;
 

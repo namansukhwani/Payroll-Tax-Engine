@@ -46,7 +46,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
             details = messages
               .filter((m): m is string => typeof m === 'string')
               .map((m) => ({ field: '', message: m }));
-          } else if (firstMsg && typeof firstMsg === 'object' && 'constraints' in firstMsg) {
+          } else if (
+            firstMsg &&
+            typeof firstMsg === 'object' &&
+            'constraints' in firstMsg
+          ) {
             code = ErrorCode.VALIDATION_ERROR;
             message = 'Validation failed';
             details = this.flattenValidationErrors(
@@ -59,6 +63,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
         }
       } else if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
+      }
+
+      const logContext = `${request.method} ${request.url} → ${status} [${code}]`;
+      if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+        this.logger.error(logContext, exception.stack);
+      } else {
+        this.logger.warn(`${logContext}: ${message}`);
       }
     } else {
       this.logger.error(

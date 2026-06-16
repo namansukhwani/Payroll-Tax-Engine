@@ -71,6 +71,7 @@ export class DeductionSectionService {
   async findAll(
     countryCode: string,
     pagination: PaginationQueryDto,
+    regimeId?: string,
   ): Promise<PaginatedResponse<DeductionSection>> {
     const country = await this.countryService.findByCode(countryCode);
     const { page, limit } = pagination;
@@ -83,6 +84,13 @@ export class DeductionSectionService {
       .orderBy('ds.displayOrder', 'ASC')
       .skip((page - 1) * limit)
       .take(limit);
+
+    if (regimeId) {
+      qb.andWhere(
+        '(ds.regimeId = :regimeId OR ds.isApplicableAllRegimes = true)',
+        { regimeId },
+      );
+    }
 
     const [data, total] = await qb.getManyAndCount();
 

@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 
 export class CreateTaxRegimeDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   countryCode!: string;

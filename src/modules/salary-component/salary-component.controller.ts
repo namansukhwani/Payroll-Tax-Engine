@@ -67,11 +67,12 @@ export class SalaryComponentController {
   }
 
   @Delete(':code')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async softDelete(
     @Param('countryCode') countryCode: string,
     @Param('code') code: string,
-  ): Promise<void> {
-    return this.salaryComponentService.softDelete(countryCode, code);
+  ): Promise<{ message: string }> {
+    await this.salaryComponentService.softDelete(countryCode, code);
+    return { message: 'Salary component deactivated successfully' };
   }
 }

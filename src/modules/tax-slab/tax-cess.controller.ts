@@ -51,8 +51,9 @@ export class TaxCessController {
   }
 
   @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async softDelete(@Param('id') id: string): Promise<void> {
-    return this.taxCessService.softDelete(id);
+  @HttpCode(HttpStatus.OK)
+  async softDelete(@Param('id') id: string): Promise<{ message: string }> {
+    await this.taxCessService.softDelete(id);
+    return { message: 'Tax cess deactivated successfully' };
   }
 }

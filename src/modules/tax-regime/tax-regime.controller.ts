@@ -62,11 +62,12 @@ export class TaxRegimeController {
   }
 
   @Delete(':regimeCode')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async softDelete(
     @Param('countryCode') countryCode: string,
     @Param('regimeCode') regimeCode: string,
-  ): Promise<void> {
-    return this.taxRegimeService.softDelete(countryCode, regimeCode);
+  ): Promise<{ message: string }> {
+    await this.taxRegimeService.softDelete(countryCode, regimeCode);
+    return { message: 'Tax regime deactivated successfully' };
   }
 }
