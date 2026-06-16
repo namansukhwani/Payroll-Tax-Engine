@@ -32,7 +32,7 @@ export class StatutoryContribution extends BaseEntity {
   @Column({ name: 'calculation_base', type: 'varchar', length: 50, nullable: true })
   calculationBase!: string | null;
 
-  @Column({ name: 'rate_percentage', type: 'decimal', precision: 5, scale: 4, nullable: true })
+  @Column({ name: 'rate_percentage', type: 'decimal', precision: 10, scale: 4, nullable: true })
   ratePercentage!: number | null;
 
   @Column({ name: 'wage_ceiling', type: 'decimal', precision: 15, scale: 2, nullable: true })

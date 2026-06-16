@@ -10,7 +10,7 @@ import { Country } from '../../country/entities/country.entity';
 import { TaxRegime } from '../../tax-regime/entities/tax-regime.entity';
 
 @Entity('deduction_sections')
-@Index(['countryId', 'code', 'effectiveFrom'], { unique: true })
+@Index(['countryId', 'code', 'regimeId', 'effectiveFrom'], { unique: true })
 @Index(['countryId', 'regimeId', 'isActive'])
 export class DeductionSection extends BaseEntity {
   @Column({ name: 'country_id', type: 'uuid', nullable: false })

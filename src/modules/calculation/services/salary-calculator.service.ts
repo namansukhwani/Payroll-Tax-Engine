@@ -107,12 +107,20 @@ export class SalaryCalculatorService {
     // Step 2: Initialize resolvedValues
     const resolvedValues: Record<string, number> = { CTC: annualCtc };
 
-    // Step 3: Separate BALANCING from non-BALANCING
+    // Step 3: Separate into processing groups
+    // EMPLOYER_CONTRIBUTION must be processed AFTER GROSS is established
     const balancingComponents = sorted.filter(
       (c) => c.calculationType === CalculationType.BALANCING,
     );
+    const employerContribComponents = sorted.filter(
+      (c) =>
+        c.componentType === ComponentType.EMPLOYER_CONTRIBUTION &&
+        c.calculationType !== CalculationType.BALANCING,
+    );
     const nonBalancingComponents = sorted.filter(
-      (c) => c.calculationType !== CalculationType.BALANCING,
+      (c) =>
+        c.calculationType !== CalculationType.BALANCING &&
+        c.componentType !== ComponentType.EMPLOYER_CONTRIBUTION,
     );
 
     // Accumulators
@@ -234,7 +242,48 @@ export class SalaryCalculatorService {
       resolvedValues['GROSS'] = grossSalary;
     }
 
-    // Step 7: Build and return SalaryBreakdown
+    // Step 7: Process EMPLOYER_CONTRIBUTION components (GROSS now fully resolved)
+    for (const c of employerContribComponents) {
+      const defaultValue = Number(c.defaultValue ?? 0);
+      const calculationBase = c.calculationBase ?? 'CTC';
+      let base = resolvedValues[calculationBase] ?? 0;
+      let rate = defaultValue;
+      let value = 0;
+
+      if (c.calculationType === CalculationType.PERCENTAGE) {
+        value = this.round2((base * rate) / 100);
+      } else {
+        value = defaultValue;
+      }
+
+      // Apply active conditions
+      const activeConditions = (c.conditions ?? []).filter((cond) => cond.isActive);
+      for (const cond of activeConditions) {
+        if (this.evaluateCondition(cond.conditionType, cond.conditionOperator, cond.conditionValue, context)) {
+          const overrideValue = Number(cond.overrideValue);
+          if (c.calculationType === CalculationType.PERCENTAGE) {
+            const overrideBase = resolvedValues[cond.overrideCalculationBase ?? c.calculationBase ?? 'CTC'] ?? 0;
+            base = overrideBase; rate = overrideValue;
+            value = this.round2((overrideBase * overrideValue) / 100);
+          } else { value = overrideValue; }
+          break;
+        }
+      }
+
+      // Apply wageCeiling
+      if (c.calculationType === CalculationType.PERCENTAGE && c.wageCeiling !== null) {
+        const cap = Number(c.wageCeiling);
+        if (base > cap) { base = cap; value = this.round2((base * rate) / 100); }
+      }
+      if (c.minValue !== null) value = Math.max(value, Number(c.minValue));
+      if (c.maxValue !== null) value = Math.min(value, Number(c.maxValue));
+      value = this.round2(value);
+
+      resolvedValues[c.code] = value;
+      employerContributions.push(this.toItem(c, value));
+    }
+
+    // Step 8: Build and return SalaryBreakdown
     return {
       resolvedValues,
       earnings,

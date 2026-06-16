@@ -32,7 +32,7 @@ export class TaxRegimeService {
       where: {
         countryId: country.id,
         code: dto.code,
-        effectiveFrom: new Date(dto.effectiveFrom) as unknown as Date,
+        effectiveFrom: new Date(dto.effectiveFrom),
       },
     });
 
@@ -154,10 +154,13 @@ export class TaxRegimeService {
     const regime = await this.findByCountryAndCode(countryCode, regimeCode);
 
     if (dto.name !== undefined) regime.name = dto.name;
-    if (dto.description !== undefined) regime.description = dto.description ?? null;
+    if (dto.description !== undefined)
+      regime.description = dto.description ?? null;
     if (dto.isDefault !== undefined) regime.isDefault = dto.isDefault;
-    if (dto.effectiveFrom !== undefined) regime.effectiveFrom = new Date(dto.effectiveFrom);
-    if (dto.effectiveTo !== undefined) regime.effectiveTo = dto.effectiveTo ? new Date(dto.effectiveTo) : null;
+    if (dto.effectiveFrom !== undefined)
+      regime.effectiveFrom = new Date(dto.effectiveFrom);
+    if (dto.effectiveTo !== undefined)
+      regime.effectiveTo = dto.effectiveTo ? new Date(dto.effectiveTo) : null;
     if (dto.isActive !== undefined) regime.isActive = dto.isActive;
 
     return this.repo.save(regime);

@@ -9,7 +9,7 @@ import { validationSchema } from './config/validation.schema';
 import { DatabaseModule } from './database/database.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseTransformInterceptor } from './common/interceptors/response-transform.interceptor';
-import { TaxSlabModule } from './modules/tax-slab/tax-slab.module';
+import { CalculationModule } from './modules/calculation/calculation.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { TaxSlabModule } from './modules/tax-slab/tax-slab.module';
       validationSchema,
     }),
     DatabaseModule,
-    TaxSlabModule,
+    CalculationModule,
   ],
   controllers: [AppController],
   providers: [
